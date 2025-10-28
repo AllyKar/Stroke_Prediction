@@ -15,3 +15,11 @@ print(predictions)
 
 results_df = pd.DataFrame({'Predicted': predictions})
 results_df.to_csv('random_forest_predictions.csv', index=False)
+
+df_with_predictions = df.copy()
+df_with_predictions[' Predicted Stroke Risk (%)'] = results_df
+
+print(df_with_predictions)
+
+df_with_predictions.to_csv('dataset_with_predictions.csv', index=False)
+
