@@ -3,104 +3,15 @@ from pandas.core.common import random_state
 
 #read csv file
 df = pd.read_csv('stroke_risk_dataset.csv', encoding = 'latin-1')
-
-"""
-#Used to test read of csv file
-print(df.head())
-"""
-
-#drop binary column
-df = df.drop(columns = ['At Risk (Binary)'])
-
-print(df.head())
-
-X = df.drop(['Stroke Risk (%)'], axis = 1)
-y = df['Stroke Risk (%)']
-
-from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 15)
+df = df.drop(columns = ['At Risk (Binary)', 'Stroke Risk (%)'])
 
 from sklearn.ensemble import RandomForestRegressor
-rfr = RandomForestRegressor(random_state = 15)
-rfr.fit(X_train, y_train)
+import joblib
+model = joblib.load('rfr_cv.joblib')
 
-# To view the first few rows of the training features
+predictions = model.predict(df)
 
-print(X_test.head())
+print(predictions)
 
-# To view the first few rows of the testing targets
-
-print(y_test.head())
-
-
-y_pred = rfr.predict(X_test)
-
-
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-mean_absolute_error(y_pred,y_test)
-mean_squared_error(y_pred,y_test)
-r2_score(y_pred, y_test)
-
-print(mean_absolute_error(y_pred,y_test))
-print(mean_squared_error(y_pred,y_test))
-print(r2_score(y_pred,y_test))
-
-"""
-
-param_grid = {
-    'n_estimators': [150, 175, 200],
-    'max_depth': [10,20,30],
-    'min_samples_split': [2,5,10],
-    'min_samples_leaf': [1,5,10],
-}
-
-from sklearn.model_selection import GridSearchCV
-rfr_cv = GridSearchCV(estimator=rfr, param_grid=param_grid, cv=3, scoring='neg_mean_squared_error', n_jobs=-1)
-rfr_cv.fit(X_train, y_train)
-
-y_pred = rfr_cv.predict(X_test)
-
-mean_absolute_error(y_pred,y_test)
-mean_squared_error(y_pred,y_test)
-r2_score(y_pred, y_test)
-print(mean_absolute_error(y_pred,y_test))
-print(mean_squared_error(y_pred,y_test))
-print(r2_score(y_pred,y_test))
-"""
-
-
-#Scatter plot looking at stroke risk vs patients age
-import matplotlib.pyplot as plt
-#looks at first 100 patients in dataset
-rdf = df = df.head(100)
-
-# Scatter plot with age against stroke risk
-plt.scatter(rdf['Stroke Risk (%)'], rdf['Age'])
-
-# Adding Title to the Plot
-plt.title("Scatter Plot")
-
-# Setting the X and Y labels
-plt.xlabel('Stroke Risk')
-plt.ylabel('Age')
-
-plt.show()
-
-
-"""
-#Used to view individual decision trees
-
-from sklearn.tree import plot_tree
-import matplotlib.pyplot as plt
-
-tree_to_plot = rfr.estimators_[1]
-
-plt.figure(figsize=(20, 10))
-plot_tree(tree_to_plot, feature_names=df.columns.tolist(), filled=True, rounded=True, fontsize=10)
-plt.title("Decision Tree from Random Forest")
-plt.show()
-
-"""
-
-print(y_test)
-
+results_df = pd.DataFrame({'Predicted': predictions})
+results_df.to_csv('random_forest_predictions.csv', index=False)
