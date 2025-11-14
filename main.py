@@ -148,12 +148,21 @@ plt.title(f'Scatter Plot of Stroke Risk vs Symptoms')
 # Display the plot
 plt.show()
 
+"""
 n = 107
 print('\nPatient ', n , ':')
 print(df1.iloc[n])
+"""
 
+#Prints list of High Risk Patients sorted from high to low based on risk level
 High_Risk_Sorted = High_Risk.sort_values(by='Predicted Stroke Risk (%)', ascending=False)
 print('\nHigh Risk Patients')
 print('Number of High Risk Patients:', HR_count)
 
 print(High_Risk_Sorted.head(25))
+
+#Prompts user for input, prints patient information based on input
+pt_num = input("Enter Patient Number : ")
+pt_num_input = int(pt_num)
+print('\nPatient ', pt_num_input , ':')
+print(df1.iloc[pt_num_input])
